@@ -1,122 +1,136 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const TheProject());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class TheProject extends StatelessWidget {
+  const TheProject({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: Dashboard());
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class Dashboard extends StatefulWidget {
+  const Dashboard({super.key});
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _DashboardState extends State<Dashboard> {
+  final ScrollController _scrollController = ScrollController();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToCenter();
     });
   }
 
+  void _scrollToCenter() {
+    // Hitung posisi: (Lebar Card1) + (SizedBox width)
+    // Dalam kasusmu: 800 + 10 = 810
+    _scrollController.jumpTo(470);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text("The Project"),
+        backgroundColor: Color.fromARGB(255, 80, 0, 178),
+        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            SingleChildScrollView(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  _buildCard('Card1', Color.fromARGB(255, 80, 0, 178)),
+                  SizedBox(width: 10),
+                  _buildCard('Card2', Color.fromARGB(255, 80, 0, 178)),
+                  SizedBox(width: 10),
+                  _buildCard('Card3', Color.fromARGB(255, 80, 0, 178)),
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                "Menu Utama",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: GridView.count(
+                shrinkWrap:
+                    true, // PENTING: Agar GridView tidak mengambil semua space
+                physics:
+                    const NeverScrollableScrollPhysics(), // Biarkan SingleChildScrollView yang handle scroll-nya
+                crossAxisCount: 4, // Jumlah kolom icon
+                mainAxisSpacing: 20,
+                crossAxisSpacing: 20,
+                children: [
+                  _buildMenuIcon(Icons.account_balance_wallet, "Dompet"),
+                  _buildMenuIcon(Icons.send, "Transfer"),
+                  _buildMenuIcon(Icons.history, "Riwayat"),
+                  _buildMenuIcon(Icons.payment, "Tagihan"),
+                  _buildMenuIcon(Icons.qr_code, "Scan QR"),
+                  _buildMenuIcon(Icons.security, "Keamanan"),
+                  _buildMenuIcon(Icons.help, "Bantuan"),
+                  _buildMenuIcon(Icons.settings, "Lainnya"),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
   }
+}
+
+// Widget Card Design
+Widget _buildCard(String title, Color color) {
+  return Container(
+    width: 800,
+    height: 250,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Center(
+      child: Text(
+        title,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+  );
+}
+
+Widget _buildMenuIcon(IconData icon, String label) {
+  return Column(
+    children: [
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 80, 0, 178),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: const Color.fromARGB(255, 80, 0, 178)),
+      ),
+      const SizedBox(height: 8),
+      Text(label, style: const TextStyle(fontSize: 12)),
+    ],
+  );
 }
