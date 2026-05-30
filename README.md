@@ -1,3 +1,5 @@
+HATI HATI SAAT COMMIT
+
 nama-proyek-anda/
 ├── .github/                  # Konfigurasi GitHub (CI/CD, Issue templates)
 ├── .gitignore                # File yang diabaikan oleh Git (wajib)
