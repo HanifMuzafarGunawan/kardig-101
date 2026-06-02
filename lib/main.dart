@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'insert.dart';
 
 void main() => runApp(const TheProject());
 
@@ -161,7 +162,11 @@ class _DashboardState extends State<Dashboard> {
       // 3. Tombol Tambah di Posisi Center Bawah
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const InsertPage()));
+        },
         backgroundColor: const Color(
           0xFF1E1E20,
         ), // Warna gelap minimalis kontras
