@@ -6,7 +6,13 @@ class TheProject extends StatelessWidget {
   const TheProject({super.key});
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: Dashboard());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF131314),
+      ),
+      home: const Dashboard(),
+    );
   }
 }
 
@@ -17,120 +23,240 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  final ScrollController _scrollController = ScrollController();
+  // Data kartu utama (urutan dari belakang ke depan di dalam Stack)
+  List<Map<String, dynamic>> _cards = [
+    {'title': 'Belanja', 'color': const Color(0xFFEA4335)},
+    {'title': 'Simpanan', 'color': const Color(0xFF34A853)},
+    {'title': 'Utama', 'color': const Color(0xFF1A73E8)},
+  ];
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _scrollToCenter();
+  // List cadangan asli untuk mengetahui urutan halaman/titik indikator yang aktif
+  final List<String> _originalOrder = ['Belanja', 'Simpanan', 'Utama'];
+
+  double _swipeOffset = 0.0;
+  bool _isDragging = false;
+
+  void _shuffleCard() {
+    setState(() {
+      // Mengambil kartu paling depan (indeks terakhir) lalu ditaruh ke belakang (indeks 0)
+      final topCard = _cards.removeLast();
+      _cards.insert(0, topCard);
+      _swipeOffset = 0.0;
+      _isDragging = false;
     });
-  }
-
-  void _scrollToCenter() {
-    // Hitung posisi: (Lebar Card1) + (SizedBox width)
-    // Dalam kasusmu: 800 + 10 = 810
-    _scrollController.jumpTo(470);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Mencari tahu kartu apa yang sekarang berada di posisi paling depan
+    String currentTopTitle = _cards.last['title'];
+    int activeIndex = _originalOrder.indexOf(currentTopTitle);
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("The Project"),
-        backgroundColor: Color.fromARGB(255, 80, 0, 178),
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20),
+        title: const Text(
+          "Google Wallet",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
+        ),
+        backgroundColor: const Color(0xFF131314),
+        elevation: 0,
+        centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SingleChildScrollView(
-              controller: _scrollController,
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  _buildCard('Card1', Color.fromARGB(255, 80, 0, 178)),
-                  SizedBox(width: 10),
-                  _buildCard('Card2', Color.fromARGB(255, 80, 0, 178)),
-                  SizedBox(width: 10),
-                  _buildCard('Card3', Color.fromARGB(255, 80, 0, 178)),
-                ],
-              ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // 1. Area Tumpukan Kartu di Tengah Layar
+          Container(
+            height: 420,
+            alignment: Alignment.center,
+            child: Stack(
+              clipBehavior: Clip.none,
+              alignment: Alignment
+                  .center, // Memastikan semua elemen default berada di tengah
+              children: _cards.asMap().entries.map((entry) {
+                int index = entry.key;
+                var cardData = entry.value;
+
+                bool isTopCard = index == _cards.length - 1;
+
+                // Efek tumpukan berlapis: kartu belakang dibuat agak bergeser ke atas
+                double baseTopPosition = (_cards.length - 1 - index) * -16.0;
+
+                // Efek skala perspektif untuk memberikan kedalaman visual 3D
+                double scale = 1.0 - ((_cards.length - 1 - index) * 0.05);
+
+                // Menggunakan Transform.translate untuk menggeser kartu teratas saat di-drag
+                // Ini menggantikan penggunaan 'left' agar tidak merusak posisi center awal
+                Widget cardWidget = AnimatedContainer(
+                  duration: Duration(milliseconds: _isDragging ? 0 : 300),
+                  transform: Matrix4.identity()
+                    ..translate(
+                      isTopCard ? _swipeOffset : 0.0,
+                      baseTopPosition,
+                    ),
+                  child: Transform.scale(
+                    scale: scale,
+                    child: _buildVerticalCard(
+                      cardData['title'],
+                      cardData['color'],
+                    ),
+                  ),
+                );
+
+                // Logika khusus untuk kartu teratas agar bisa di-shuffle secara horizontal
+                if (isTopCard) {
+                  return GestureDetector(
+                    onHorizontalDragUpdate: (details) {
+                      setState(() {
+                        _isDragging = true;
+                        _swipeOffset += details.primaryDelta ?? 0;
+                      });
+                    },
+                    onHorizontalDragEnd: (details) {
+                      // Jika digeser ke kanan atau kiri lebih dari 120 piksel, shuffle kartu
+                      if (_swipeOffset.abs() > 120) {
+                        _shuffleCard();
+                      } else {
+                        setState(() {
+                          _isDragging = false;
+                          _swipeOffset = 0.0;
+                        });
+                      }
+                    },
+                    child: cardWidget,
+                  );
+                }
+
+                // Untuk kartu belakang, langsung return widget tanpa GestureDetector
+                return cardWidget;
+              }).toList(),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                "Menu Utama",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: GridView.count(
-                shrinkWrap:
-                    true, // PENTING: Agar GridView tidak mengambil semua space
-                physics:
-                    const NeverScrollableScrollPhysics(), // Biarkan SingleChildScrollView yang handle scroll-nya
-                crossAxisCount: 4, // Jumlah kolom icon
-                mainAxisSpacing: 20,
-                crossAxisSpacing: 20,
-                children: [
-                  _buildMenuIcon(Icons.account_balance_wallet, "Dompet"),
-                  _buildMenuIcon(Icons.send, "Transfer"),
-                  _buildMenuIcon(Icons.history, "Riwayat"),
-                  _buildMenuIcon(Icons.payment, "Tagihan"),
-                  _buildMenuIcon(Icons.qr_code, "Scan QR"),
-                  _buildMenuIcon(Icons.security, "Keamanan"),
-                  _buildMenuIcon(Icons.help, "Bantuan"),
-                  _buildMenuIcon(Icons.settings, "Lainnya"),
-                ],
-              ),
-            ),
-          ],
+          ),
+
+          const SizedBox(height: 32),
+
+          // 2. Titik-titik Indikator Jumlah Kartu (Page Indicator)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(_originalOrder.length, (index) {
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: activeIndex == index
+                    ? 24
+                    : 8, // Titik aktif dibuat lebih panjang melonjong
+                height: 8,
+                decoration: BoxDecoration(
+                  color: activeIndex == index
+                      ? const Color(0xFFA8C7FA)
+                      : Colors.grey.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+
+      // 3. Tombol Tambah di Posisi Center Bawah
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        backgroundColor: const Color(
+          0xFF1E1E20,
+        ), // Warna gelap minimalis kontras
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: Colors.grey.withValues(alpha: 0.3), width: 1),
+        ),
+        icon: const Icon(Icons.add, color: Color(0xFFA8C7FA)),
+        label: const Text(
+          "Tambahkan ke Wallet",
+          style: TextStyle(
+            color: Color(0xFFE3E2E6),
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ),
     );
   }
 }
 
-// Widget Card Design
-Widget _buildCard(String title, Color color) {
+// Widget Desain Kartu Vertikal dengan QR Code di Tengah
+Widget _buildVerticalCard(String title, Color color) {
   return Container(
-    width: 800,
-    height: 250,
+    width: 240,
+    height: 360,
     decoration: BoxDecoration(
       color: color,
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Center(
-      child: Text(
-        title,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+      borderRadius: BorderRadius.circular(28),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.4),
+          blurRadius: 15,
+          offset: const Offset(0, 8),
         ),
-      ),
+      ],
     ),
-  );
-}
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Bagian Atas
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
+            ),
+            const Icon(Icons.contactless, color: Colors.white, size: 28),
+          ],
+        ),
 
-Widget _buildMenuIcon(IconData icon, String label) {
-  return Column(
-    children: [
-      Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 80, 0, 178),
-          shape: BoxShape.circle,
+        // Bagian Tengah: QR Code
+        Center(
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(Icons.qr_code_2, size: 100, color: Colors.black),
+          ),
         ),
-        child: Icon(icon, color: const Color.fromARGB(255, 80, 0, 178)),
-      ),
-      const SizedBox(height: 8),
-      Text(label, style: const TextStyle(fontSize: 12)),
-    ],
+
+        // Bagian Bawah
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "•••• 1234",
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 18,
+                letterSpacing: 3,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 28,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
   );
 }
