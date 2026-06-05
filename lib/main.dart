@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'insert.dart';
+import 'camera.dart';
 
 void main() => runApp(const TheProject());
 
@@ -25,10 +26,10 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   // Data kartu utama (urutan dari belakang ke depan di dalam Stack)
-  List<Map<String, dynamic>> _cards = [
-    {'title': 'Belanja', 'color': const Color(0xFFEA4335)},
-    {'title': 'Simpanan', 'color': const Color(0xFF34A853)},
-    {'title': 'Utama', 'color': const Color(0xFF1A73E8)},
+  final List<Map<String, dynamic>> _cards = [
+    {'title': 'Belanja', 'color': const Color.fromARGB(255, 99, 78, 169)},
+    {'title': 'Jalan', 'color': const Color(0xFF34A853)},
+    {'title': 'Sekunder', 'color': const Color(0xFF1A73E8)},
   ];
 
   // List cadangan asli untuk mengetahui urutan halaman/titik indikator yang aktif
@@ -56,7 +57,7 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Google Wallet",
+          "Kardig Wallet",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
         ),
         backgroundColor: const Color(0xFF131314),
@@ -163,9 +164,8 @@ class _DashboardState extends State<Dashboard> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (_) => const InsertPage()));
+          Navigator.of(context,
+          ).push(MaterialPageRoute(builder: (_) => const Camera()));
         },
         backgroundColor: const Color(
           0xFF1E1E20,
