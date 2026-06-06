@@ -169,10 +169,10 @@ class _DashboardState extends State<Dashboard> {
         },
         backgroundColor: const Color.fromARGB(255, 0, 0, 0), // Warna gelap minimalis kontras
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(100),
           side: BorderSide(color: Colors.grey.withValues(alpha: 0.3), width: 1),
         ),
-        icon: const Icon(Icons.add, color: Color(0xFFA8C7FA)),
+        icon: const Icon(Icons.add, color: Color.fromARGB(255, 255, 255, 255)),
         label: const Text(
           "Tambah karcis",
           style: TextStyle(

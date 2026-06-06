@@ -44,7 +44,10 @@ class _CameraState extends State<Camera> {
         : 300.0;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Scan QR Code")),
+      appBar: AppBar(
+        title: Text("Scan QR Code"),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+      ),
       body: QRView(
         key: qrKey,
         onQRViewCreated: _onQRViewCreated,

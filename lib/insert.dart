@@ -93,7 +93,7 @@ class _InsertPageState extends State<InsertPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tambah ke Wallet'),
-        backgroundColor: const Color(0xFF131314),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         elevation: 0,
       ),
       body: Padding(
@@ -113,7 +113,7 @@ class _InsertPageState extends State<InsertPage> {
                 decoration: InputDecoration(
                   labelText: 'Kode QR',
                   filled: true,
-                  fillColor: const Color(0xFF1E1E20),
+                  fillColor: const Color(0xFF131314),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
