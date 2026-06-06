@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class InsertPage extends StatefulWidget {
-  const InsertPage({super.key});
+  final String? scannedCode;
+
+  const InsertPage({super.key, this.scannedCode});
 
   @override
   State<InsertPage> createState() => _InsertPageState();
@@ -9,6 +11,7 @@ class InsertPage extends StatefulWidget {
 
 class _InsertPageState extends State<InsertPage> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _codeController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _firstHourController = TextEditingController();
   final TextEditingController _afterFirstHourController =
@@ -17,7 +20,16 @@ class _InsertPageState extends State<InsertPage> {
   DateTime _selectedDateTime = DateTime.now();
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.scannedCode != null) {
+      _codeController.text = widget.scannedCode!;
+    }
+  }
+
+  @override
   void dispose() {
+    _codeController.dispose();
     _nameController.dispose();
     _firstHourController.dispose();
     _afterFirstHourController.dispose();
@@ -95,6 +107,21 @@ class _InsertPageState extends State<InsertPage> {
                 style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
               const SizedBox(height: 24),
+              TextFormField(
+                controller: _codeController,
+                enabled: false,
+                decoration: InputDecoration(
+                  labelText: 'Kode QR',
+                  filled: true,
+                  fillColor: const Color(0xFF1E1E20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                style: const TextStyle(color: Colors.white70),
+              ),
+              const SizedBox(height: 20),
               TextFormField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,

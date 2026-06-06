@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner_plus/qr_code_scanner_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'insert.dart';
 
 Future<bool> requestCameraPermission() async {
   final status = await Permission.camera.request();
@@ -64,7 +65,11 @@ class _CameraState extends State<Camera> {
     controller.scannedDataStream.listen((scanData) {
       if (scanData.code != null) {
         controller.pauseCamera();
-        Navigator.pop(context, scanData.code);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => InsertPage(scannedCode: scanData.code),
+          ),
+        );
       }
     });
   }
