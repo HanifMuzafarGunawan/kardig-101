@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class InsertPage extends StatefulWidget {
   const InsertPage({super.key});
@@ -14,7 +15,82 @@ class _InsertPageState extends State<InsertPage> {
   final TextEditingController _afterFirstHourController =
       TextEditingController();
   final TextEditingController _maxRateController = TextEditingController();
+  final TextEditingController _dateTimeController = TextEditingController();
+
   DateTime _selectedDateTime = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _dateTimeController.text = _formatDateTime(_selectedDateTime);
+  }
+
+  // ✅ Fungsi format tanggal & waktu yang hilang
+  String _formatDateTime(DateTime dateTime) {
+    final monthNames = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+    final day = dateTime.day.toString().padLeft(2, '0');
+    final month = monthNames[dateTime.month - 1];
+    final year = dateTime.year;
+    final hour = dateTime.hour.toString().padLeft(2, '0');
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    return '$day $month $year, $hour:$minute';
+  }
+
+  DateTime? _parseDateTime(String value) {
+    final monthNames = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ];
+
+    final parts = value.split(',');
+    if (parts.length != 2) return null;
+
+    final dateParts = parts[0].trim().split(' ');
+    if (dateParts.length != 3) return null;
+
+    final day = int.tryParse(dateParts[0]);
+    final monthName = dateParts[1].trim().toLowerCase();
+    final year = int.tryParse(dateParts[2]);
+    if (day == null || year == null) return null;
+
+    final monthIndex = monthNames.indexWhere(
+      (name) => name.toLowerCase() == monthName,
+    );
+    if (monthIndex < 0) return null;
+
+    final timeParts = parts[1].trim().split(':');
+    if (timeParts.length != 2) return null;
+
+    final hour = int.tryParse(timeParts[0]);
+    final minute = int.tryParse(timeParts[1]);
+    if (hour == null || minute == null) return null;
+    if (hour < 0 || hour > 23 || minute < 0 || minute > 59) return null;
+
+    return DateTime(year, monthIndex + 1, day, hour, minute);
+  }
 
   @override
   void dispose() {
@@ -22,56 +98,60 @@ class _InsertPageState extends State<InsertPage> {
     _firstHourController.dispose();
     _afterFirstHourController.dispose();
     _maxRateController.dispose();
+    _dateTimeController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickTime() async {
+  Future<void> _pickDateTime() async {
+    FocusScope.of(
+      context,
+    ).requestFocus(FocusNode()); // agar keyboard tidak muncul
+
+    final date = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateTime,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return MediaQuery(data: MediaQuery.of(context), child: child!);
+      },
+    );
+
+    if (date == null) return;
+
     final time = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
     );
 
     if (time != null) {
       setState(() {
         _selectedDateTime = DateTime(
-          _selectedDateTime.year,
-          _selectedDateTime.month,
-          _selectedDateTime.day,
+          date.year,
+          date.month,
+          date.day,
           time.hour,
           time.minute,
         );
+        _dateTimeController.text = _formatDateTime(_selectedDateTime);
       });
     }
   }
 
-  String get _formattedDateTime {
-    final monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
-    final day = _selectedDateTime.day.toString().padLeft(2, '0');
-    final month = monthNames[_selectedDateTime.month - 1];
-    final year = _selectedDateTime.year;
-    final hour = _selectedDateTime.hour.toString().padLeft(2, '0');
-    final minute = _selectedDateTime.minute.toString().padLeft(2, '0');
-    return '$day $month $year, $hour:$minute';
-  }
-
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Data berhasil disimpan')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Data berhasil disimpan'),
+          backgroundColor: Colors.green,
+        ),
+      );
       Navigator.of(context).pop();
     }
   }
@@ -116,27 +196,43 @@ class _InsertPageState extends State<InsertPage> {
                 },
               ),
               const SizedBox(height: 20),
-              GestureDetector(
-                onTap: _pickTime,
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    decoration: InputDecoration(
-                      labelText: 'Waktu',
-                      hintText: _formattedDateTime,
-                      filled: true,
-                      fillColor: const Color(0xFF1E1E20),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide.none,
-                      ),
-                      suffixIcon: const Icon(
-                        Icons.access_time,
-                        color: Colors.white70,
-                      ),
-                    ),
-                    style: const TextStyle(color: Colors.white),
+              TextFormField(
+                controller: _dateTimeController,
+                keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r"[0-9A-Za-z,\s:]")),
+                ],
+                onTap: _pickDateTime,
+                decoration: InputDecoration(
+                  labelText: 'Tanggal & Waktu',
+                  hintText: _formatDateTime(_selectedDateTime),
+                  filled: true,
+                  fillColor: const Color(0xFF1E1E20),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide.none,
+                  ),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.date_range, color: Colors.white70),
+                    onPressed: _pickDateTime,
                   ),
                 ),
+                style: const TextStyle(color: Colors.white),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Tanggal & waktu wajib diisi';
+                  }
+
+                  final parsed = _parseDateTime(value.trim());
+                  if (parsed == null) {
+                    return 'Format harus: dd MMMM yyyy, HH:mm';
+                  }
+
+                  _selectedDateTime = parsed;
+                  _dateTimeController.text = _formatDateTime(parsed);
+                  return null;
+                },
               ),
               const SizedBox(height: 20),
               TextFormField(
@@ -156,6 +252,10 @@ class _InsertPageState extends State<InsertPage> {
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Tarif 1 jam pertama wajib diisi';
+                  }
+                  final num? parsed = num.tryParse(value);
+                  if (parsed == null || parsed < 0) {
+                    return 'Masukkan angka yang valid';
                   }
                   return null;
                 },
@@ -179,6 +279,10 @@ class _InsertPageState extends State<InsertPage> {
                   if (value == null || value.trim().isEmpty) {
                     return 'Tarif 1 jam setelahnya wajib diisi';
                   }
+                  final num? parsed = num.tryParse(value);
+                  if (parsed == null || parsed < 0) {
+                    return 'Masukkan angka yang valid';
+                  }
                   return null;
                 },
               ),
@@ -197,6 +301,15 @@ class _InsertPageState extends State<InsertPage> {
                   ),
                 ),
                 style: const TextStyle(color: Colors.white),
+                validator: (value) {
+                  if (value != null && value.isNotEmpty) {
+                    final num? parsed = num.tryParse(value);
+                    if (parsed == null || parsed < 0) {
+                      return 'Masukkan angka yang valid';
+                    }
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 32),
               ElevatedButton(
