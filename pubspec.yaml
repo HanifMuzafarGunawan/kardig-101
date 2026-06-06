@@ -32,7 +32,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -41,14 +40,31 @@ dependencies:
   permission_handler: ^12.0.0
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.0
+
+  #ICON APLIKASI
+flutter_launcher_icons:
+  android: "laucher_icon"
+  image_path: "assets/icon/kardig_pride.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+
+  #boot warna
+flutter_native_splash:
+  color: "#FF131314"
+  image: "assets/icon/kardig_pride.png"
+
+  android_12: 
+    color: "#FF131314"
+    image: "assets/icon/kardig_pride.png"
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
+
   flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
@@ -66,6 +82,9 @@ flutter:
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
+
+  assets:
+    - assets/icon/kardig_pride.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

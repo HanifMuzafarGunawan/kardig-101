@@ -10,7 +10,7 @@ class TheProject extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF131314),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 0, 0, 0),
       ),
       home: const Dashboard(),
     );
@@ -59,7 +59,7 @@ class _DashboardState extends State<Dashboard> {
           "Kardig Wallet",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w400),
         ),
-        backgroundColor: const Color(0xFF131314),
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         elevation: 0,
         centerTitle: true,
       ),
@@ -68,7 +68,7 @@ class _DashboardState extends State<Dashboard> {
         children: [
           // 1. Area Tumpukan Kartu di Tengah Layar
           Container(
-            height: 420,
+            height: 520,
             alignment: Alignment.center,
             child: Stack(
               clipBehavior: Clip.none,
@@ -97,7 +97,7 @@ class _DashboardState extends State<Dashboard> {
                       baseTopPosition,
                     ),
                   child: Transform.scale(
-                    scale: scale + (_isDragging ? 0.2 : 0.2),
+                    scale: scale + (_isDragging ? 0.3 : 0.3),
                     child: _buildVerticalCard(
                       cardData['title'],
                       cardData['color'],
@@ -167,9 +167,7 @@ class _DashboardState extends State<Dashboard> {
           Navigator.of(context,
           ).push(MaterialPageRoute(builder: (_) => const Camera()));
         },
-        backgroundColor: const Color(
-          0xFF1E1E20,
-        ), // Warna gelap minimalis kontras
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0), // Warna gelap minimalis kontras
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
           side: BorderSide(color: Colors.grey.withValues(alpha: 0.3), width: 1),
