@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'insert.dart';
 import 'camera.dart';
 
 void main() => runApp(const TheProject());
@@ -28,12 +27,12 @@ class _DashboardState extends State<Dashboard> {
   // Data kartu utama (urutan dari belakang ke depan di dalam Stack)
   final List<Map<String, dynamic>> _cards = [
     {'title': 'Belanja', 'color': const Color.fromARGB(255, 99, 78, 169)},
-    {'title': 'Jalan', 'color': const Color(0xFF34A853)},
+    {'title': 'minum', 'color': const Color(0xFF34A853)},
     {'title': 'Sekunder', 'color': const Color(0xFF1A73E8)},
   ];
 
   // List cadangan asli untuk mengetahui urutan halaman/titik indikator yang aktif
-  final List<String> _originalOrder = ['Belanja', 'Simpanan', 'Utama'];
+  final List<String> _originalOrder = ['Belanja', 'minum', 'Sekunder'];
 
   double _swipeOffset = 0.0;
   bool _isDragging = false;
@@ -93,11 +92,12 @@ class _DashboardState extends State<Dashboard> {
                   duration: Duration(milliseconds: _isDragging ? 0 : 300),
                   transform: Matrix4.identity()
                     ..translate(
-                      isTopCard ? _swipeOffset : 0.0,
+                      0.0, //posisi X
+                      baseTopPosition + (isTopCard ? _swipeOffset : 0.0), //posisi Y
                       baseTopPosition,
                     ),
                   child: Transform.scale(
-                    scale: scale,
+                    scale: scale + (_isDragging ? 0.2 : 0.2),
                     child: _buildVerticalCard(
                       cardData['title'],
                       cardData['color'],
@@ -108,13 +108,13 @@ class _DashboardState extends State<Dashboard> {
                 // Logika khusus untuk kartu teratas agar bisa di-shuffle secara horizontal
                 if (isTopCard) {
                   return GestureDetector(
-                    onHorizontalDragUpdate: (details) {
+                    onVerticalDragUpdate: (details) {
                       setState(() {
                         _isDragging = true;
                         _swipeOffset += details.primaryDelta ?? 0;
                       });
                     },
-                    onHorizontalDragEnd: (details) {
+                    onVerticalDragEnd: (details) {
                       // Jika digeser ke kanan atau kiri lebih dari 120 piksel, shuffle kartu
                       if (_swipeOffset.abs() > 120) {
                         _shuffleCard();
@@ -176,7 +176,7 @@ class _DashboardState extends State<Dashboard> {
         ),
         icon: const Icon(Icons.add, color: Color(0xFFA8C7FA)),
         label: const Text(
-          "Tambahkan ke Wallet",
+          "Tambah karcis",
           style: TextStyle(
             color: Color(0xFFE3E2E6),
             fontWeight: FontWeight.w500,
@@ -208,6 +208,7 @@ Widget _buildVerticalCard(String title, Color color) {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
+
         // Bagian Atas
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -221,20 +222,10 @@ Widget _buildVerticalCard(String title, Color color) {
                 letterSpacing: 0.5,
               ),
             ),
-            const Icon(Icons.contactless, color: Colors.white, size: 28),
-          ],
-        ),
 
-        // Bagian Tengah: QR Code
-        Center(
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(Icons.qr_code_2, size: 100, color: Colors.black),
-          ),
+            const Icon(Icons.contactless, color: Colors.white, size: 28),
+
+          ],
         ),
 
         // Bagian Bawah
@@ -242,24 +233,38 @@ Widget _buildVerticalCard(String title, Color color) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              "•••• 1234",
+              "1234 5678 - 1234 5678",
               style: TextStyle(
                 color: Colors.white70,
-                fontSize: 18,
-                letterSpacing: 3,
+                fontSize: 13,
+                letterSpacing: 2,
                 fontWeight: FontWeight.w500,
               ),
             ),
+
             const SizedBox(height: 12),
             Container(
-              width: 40,
+              width: 80,
               height: 28,
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(14),
               ),
             ),
           ],
+        ),
+
+        // Bagian Bawah
+        // Bagian Tengah: QR Code
+        Center(
+          child: Container(
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+            ),
+            child: const Icon(Icons.qr_code_2, size: 160, color: Colors.black),
+          ),
         ),
       ],
     ),
