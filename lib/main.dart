@@ -29,6 +29,7 @@ class _DashboardState extends State<Dashboard> {
     {'title': 'Belanja', 'color': const Color.fromARGB(255, 99, 78, 169)},
     {'title': 'minum', 'color': const Color(0xFF34A853)},
     {'title': 'Sekunder', 'color': const Color(0xFF1A73E8)},
+    {'title': 'minum', 'color': const Color.fromARGB(255, 227, 104, 3)},
   ];
 
   // List cadangan asli untuk mengetahui urutan halaman/titik indikator yang aktif
@@ -50,8 +51,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     // Mencari tahu kartu apa yang sekarang berada di posisi paling depan
-    String currentTopTitle = _cards.last['title'];
-    int activeIndex = _originalOrder.indexOf(currentTopTitle);
+    // String currentTopTitle = _cards.last['title'];
+    int activeIndex = _cards.length - 1;
 
     return Scaffold(
       appBar: AppBar(
@@ -144,9 +145,7 @@ class _DashboardState extends State<Dashboard> {
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: activeIndex == index
-                    ? 24
-                    : 8, // Titik aktif dibuat lebih panjang melonjong
+                width: activeIndex == index ? 24 : 8, // Titik aktif dibuat lebih panjang melonjong
                 height: 8,
                 decoration: BoxDecoration(
                   color: activeIndex == index
@@ -318,7 +317,11 @@ Widget _buildVerticalCard(String title, Color color) {
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
             ),
-            child: const Icon(Icons.qr_code_2, size: 160, color: Colors.black),
+            child: const Icon(
+              Icons.qr_code_2, 
+              size: 160, color: 
+              Colors.black
+              ),
           ),
         ),
       ],
