@@ -221,8 +221,65 @@ Widget _buildVerticalCard(String title, Color color) {
               ),
             ),
 
-            const Icon(Icons.contactless, color: Colors.white, size: 28),
+            Row(
+              children: [
+                PopupMenuButton<String>(
+                  icon: const Icon(
+                    Icons.more_vert,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20), //radius circle border
+                  ),
+                  onSelected: (value) {
+                    if (value == 'Edit') {
+                      // Logika untuk mengedit kartu
+                    } else if (value == 'Hapus') {
+                      // Logika untuk menghapus kartu
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
+                    const PopupMenuItem<String>(
+                      value: 'Edit',
+                      child: Row(
+                        children: [
+                          Icon(
+                          Icons.edit,
+                          size: 18,
+                          color: Colors.white
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Edit',
+                          )
+                        ]
+                      )
+                    ),
 
+                    const PopupMenuItem<String>(
+                      value: 'Edit',
+                      child: Row(
+                        children: [
+                          Icon(
+                          Icons.delete_forever,
+                          size: 18,
+                          color: Colors.redAccent
+                          ),
+                          SizedBox(width: 8),
+                          Text(
+                            'Hapus',
+                            style: TextStyle(color: Colors.redAccent),
+                          )
+                        ]
+                      )
+                    )
+                  ],
+                )
+              ]
+            )
           ],
         ),
 
