@@ -41,6 +41,9 @@ class _DashboardState extends State<Dashboard> {
     0xFF1E88E5, // Biru
     0xFF43A047, // Hijau
     0xFFFDD835, // Kuning
+    0xFF9C27B0, // Ungu
+    0xFF673AB7, // Indigo
+    0xFFE91E63, // Pink
   ];
 
   double _swipeOffset = 0.0;
@@ -339,10 +342,6 @@ class _DashboardState extends State<Dashboard> {
 }
 
 // Widget Desain Kartu Vertikal dengan QR Code di Tengah
-<<<<<<< HEAD
-=======
-
->>>>>>> 7451a6c83400bf36b77760ed7c8b846b07924470
 Widget _buildVerticalCard(
   String title,
   Color color,
@@ -361,10 +360,6 @@ Widget _buildVerticalCard(
             color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 15,
             offset: const Offset(0, 8),
-<<<<<<< HEAD
-=======
-
->>>>>>> 7451a6c83400bf36b77760ed7c8b846b07924470
           ),
         ],
       ),
@@ -392,9 +387,10 @@ Widget _buildVerticalCard(
                     icon: const Icon(
                       Icons.more_vert,
                       color: Colors.white,
-                      size: 24,
+                      size: 20,
                     ),
                     padding: EdgeInsets.zero,
+                    offset: const Offset(20, 0),
                     constraints: const BoxConstraints(
                       minWidth: 0,
                       minHeight: 0,

@@ -1,4 +1,5 @@
-import 'dart:async'; 
+import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'karcis_parkir.dart';
@@ -77,8 +78,6 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        // PERBAIKAN: Actions dihapus semua sesuai request temanmu (bintang & titik 3 hilang)
-        actions: const [], 
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -134,10 +133,10 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
         children: [
           Row(
             children: const [
-              Icon(Icons.local_activity, color: Colors.white),
+              Icon(Icons.local_parking, color: Colors.white),
               SizedBox(width: 8),
               Text(
-                "tiket",
+                "Karcis",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -248,7 +247,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    height: 250,
+                    height: 350,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
@@ -260,6 +259,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       color: Colors.grey,
                     ),
                   ),
+
+                  // child: 
+
                   const SizedBox(height: 16),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
