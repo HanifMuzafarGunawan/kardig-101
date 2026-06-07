@@ -4,6 +4,8 @@ import 'insert.dart';
 import 'update.dart';
 import 'database/database_helper.dart';
 import 'models/card_model.dart';
+import 'karcis/ticket.dart';
+import 'karcis/karcis_parkir.dart';
 
 void main() => runApp(const TheProject());
 
@@ -211,6 +213,31 @@ class _DashboardState extends State<Dashboard> {
                       // Logika khusus untuk kartu teratas agar bisa di-shuffle secara horizontal
                       if (isTopCard) {
                         return GestureDetector(
+                          onTap: () {
+                            final karcisDariDatabase = KarcisParkir(
+                              id: cardData['id'].toString(),
+                              qrData: cardData['qrCode'] ?? 'Data Kosong',
+                              jamMasuk:
+                                  DateTime.tryParse(
+                                    '${cardData['date']} ${cardData['time']}',
+                                  ) ??
+                                  DateTime.now(),
+                              hargaAwal: cardData['firstHourRate'] ?? 0,
+                              hargaBerikutnya:
+                                  cardData['afterFirstHourRate'] ?? 0,
+                              tarifMaksimal: cardData['maxRate'],
+                              fotoKarcisFisik:
+                                  '', // Dikosongkan sementara karena DB belum punya foto
+                            );
+
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => TicketDetailPage(
+                                  karcis: karcisDariDatabase,
+                                ),
+                              ),
+                            );
+                          },
                           onVerticalDragUpdate: (details) {
                             setState(() {
                               _isDragging = true;
