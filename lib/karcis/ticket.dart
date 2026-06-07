@@ -9,10 +9,10 @@ class TicketDetailPage extends StatefulWidget {
   final Color warnaKartu;
 
   const TicketDetailPage({
-    super.key, 
+    super.key,
     required this.karcis,
-    required this.warnaKartu
-    });
+    required this.warnaKartu,
+  });
 
   @override
   State<TicketDetailPage> createState() => _TicketDetailPageState();
@@ -110,7 +110,12 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
           // 2. Tombol Titik Tiga (hapus)
           PopupMenuButton<String>(
             icon: const Icon(Icons.delete, color: Color.fromARGB(255, 255, 0, 0)),
-            color: const Color.fromARGB(255, 255, 0, 0), // Background popup gelap
+            color: const Color.fromARGB(
+              255,
+              255,
+              0,
+              0,
+            ), // Background popup gelap
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
@@ -153,13 +158,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            widget.warnaKartu,
-            widget.warnaKartu.withValues(alpha: 0.8),],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+        color: widget.warnaKartu,
         borderRadius: BorderRadius.circular(24),
       ),
       padding: const EdgeInsets.all(24.0),
