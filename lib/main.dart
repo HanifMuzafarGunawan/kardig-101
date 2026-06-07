@@ -260,13 +260,13 @@ class _DashboardState extends State<Dashboard> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(
-                    Icons.card_giftcard,
+                    Icons.add_card,
                     size: 64,
                     color: Colors.white54,
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Tidak ada kartu',
+                    'Tidak ada karcis',
                     style: TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   const SizedBox(height: 24),
@@ -619,7 +619,7 @@ Widget _buildVerticalCard(
                 "Jam Masuk: $jamMasuk",
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 23,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
@@ -630,17 +630,18 @@ Widget _buildVerticalCard(
                 dateString,
                 style: const TextStyle(
                   color: Colors.white70,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w400,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 13),
               // Estimasi Harga
               Text(
                 "Estimasi Harga: $estimatedPrice",
                 style: const TextStyle(
-                  color: Color.fromARGB(255, 255, 255, 255), // Warna amber yang premium dan elegan
-                  fontWeight: FontWeight.w600,
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  fontSize: 15, // Warna amber yang premium dan elegan
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],

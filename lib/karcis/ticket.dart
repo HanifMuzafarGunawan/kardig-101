@@ -92,7 +92,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                 children: [
                   const Text(
                     "Estimasi Biaya Saat Ini",
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                    style: TextStyle(color: Colors.white70, fontSize: 25),
                   ),
                   Text(
                     "Rp ${widget.karcis.prediksiHarga}",
