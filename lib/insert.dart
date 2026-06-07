@@ -135,10 +135,6 @@ class _InsertPageState extends State<InsertPage> {
     return '$hour:$minute';
   }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 9feda7e2ff4d23f16113572678f33119efffb42a
   void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {

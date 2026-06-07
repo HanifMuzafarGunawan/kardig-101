@@ -640,11 +640,6 @@ Widget _buildVerticalCard(
                 "Estimasi Harga: $estimatedPrice",
                 style: const TextStyle(
                   color: Color.fromARGB(255, 255, 255, 255), // Warna amber yang premium dan elegan
-<<<<<<< HEAD
-                  fontSize: 17,
-=======
-                  fontSize: 14,
->>>>>>> 9feda7e2ff4d23f16113572678f33119efffb42a
                   fontWeight: FontWeight.w600,
                 ),
               ),
