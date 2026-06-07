@@ -13,10 +13,10 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   
-  # Library milikmu untuk Karcis Digital
+  # Library  untuk Karcis Digital
   qr_flutter: ^4.1.0
   
-  # Library milik temanmu untuk Kamera dan Database
+  # Library milik untuk Kamera dan Database
   qr_code_scanner_plus: ^2.1.2
   permission_handler: ^12.0.0
   sqflite: ^2.3.2
@@ -34,6 +34,9 @@ flutter_launcher_icons:
   android: "launcher_icon"
   image_path: "assets/icon/kardig.png"
   min_sdk_android: 21
+
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/icon/kardig.png"
 
 # BOOT WARNA
 flutter_native_splash:
