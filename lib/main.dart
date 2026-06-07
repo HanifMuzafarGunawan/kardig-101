@@ -6,6 +6,7 @@ import 'database/database_helper.dart';
 import 'models/card_model.dart';
 import 'karcis/ticket.dart';
 import 'karcis/karcis_parkir.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 void main() => runApp(const TheProject());
 
@@ -213,21 +214,39 @@ class _DashboardState extends State<Dashboard> {
                       // Logika khusus untuk kartu teratas agar bisa di-shuffle secara horizontal
                       if (isTopCard) {
                         return GestureDetector(
-                          onTap: () {
+                            onTap: () {
+                            
+                            String tglMentah = cardData['date'].toString(); 
+                            String jamMentah = cardData['time'].toString(); 
+
+                            final Map<String, String> bulanAngka = {
+                              'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+                              'Mei': '05', 'Jun': '06', 'Jul': '07', 'Agu': '08',
+                              'Sep': '09', 'Okt': '10', 'Nov': '11', 'Des': '12'
+                            };
+
+                            List<String> bagianTgl = tglMentah.split(' ');
+                            String waktuMasukAman = "";
+
+                            if (bagianTgl.length == 3) {
+                              String hari = bagianTgl[0];
+                              String bulan = bulanAngka[bagianTgl[1]] ?? '01'; 
+                              String tahun = bagianTgl[2];
+                              
+                              
+                              waktuMasukAman = "$tahun-$bulan-$hari $jamMentah:00";
+                            }
+
+                            DateTime waktuMasuk = DateTime.tryParse(waktuMasukAman) ?? DateTime.now();
+
                             final karcisDariDatabase = KarcisParkir(
                               id: cardData['id'].toString(),
                               qrData: cardData['qrCode'] ?? 'Data Kosong',
-                              jamMasuk:
-                                  DateTime.tryParse(
-                                    '${cardData['date']} ${cardData['time']}',
-                                  ) ??
-                                  DateTime.now(),
+                              jamMasuk: waktuMasuk, // <-- Waktu yang sudah diterjemahkan
                               hargaAwal: cardData['firstHourRate'] ?? 0,
-                              hargaBerikutnya:
-                                  cardData['afterFirstHourRate'] ?? 0,
+                              hargaBerikutnya: cardData['afterFirstHourRate'] ?? 0,
                               tarifMaksimal: cardData['maxRate'],
-                              fotoKarcisFisik:
-                                  '', // Dikosongkan sementara karena DB belum punya foto
+                              fotoKarcisFisik: '', 
                             );
 
                             Navigator.of(context).push(
@@ -478,10 +497,10 @@ Widget _buildVerticalCard(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: const Icon(
-                Icons.qr_code_2,
-                size: 160,
-                color: Colors.black,
+              child: QrImageView(
+                data: qrCode.isNotEmpty ? qrCode : 'Data Kosong',
+                version: QrVersions.auto,
+                size: 160.0,
               ),
             ),
           ),
