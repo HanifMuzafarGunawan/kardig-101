@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'camera.dart';
-import 'insert.dart';
 import 'update.dart';
 import 'database/database_helper.dart';
 import 'models/card_model.dart';
@@ -37,15 +36,6 @@ class _DashboardState extends State<Dashboard> {
   bool _isLoading = true;
 
   // Warna-warna untuk kartu bergantian
-  static const List<int> _cardColors = [
-    0xFFE53935, // Merah
-    0xFF1E88E5, // Biru
-    0xFF43A047, // Hijau
-    0xFFFDD835, // Kuning
-    0xFF9C27B0, // Ungu
-    0xFF673AB7, // Indigo
-    0xFFE91E63, // Pink
-  ];
 
   double _swipeOffset = 0.0;
   bool _isDragging = false;
@@ -143,7 +133,6 @@ class _DashboardState extends State<Dashboard> {
 
       setState(() {
         _cards = cardDataList.asMap().entries.map((entry) {
-          int index = entry.key;
           CardData card = entry.value;
           return {
             'id': card.id,
@@ -600,7 +589,7 @@ Widget _buildVerticalCard(
               Text(
                 "Estimasi Harga: $estimatedPrice",
                 style: const TextStyle(
-                  color: Color(0xFFFFC107), // Warna amber yang premium dan elegan
+                  color: Color.fromARGB(255, 255, 255, 255), // Warna amber yang premium dan elegan
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),

@@ -106,28 +106,6 @@ class _InsertPageState extends State<InsertPage> {
     return '$hour:$minute';
   }
 
-  String get _formattedDateTime {
-    final monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
-    final day = _selectedDateTime.day.toString().padLeft(2, '0');
-    final month = monthNames[_selectedDateTime.month - 1];
-    final year = _selectedDateTime.year;
-    final hour = _selectedDateTime.hour.toString().padLeft(2, '0');
-    final minute = _selectedDateTime.minute.toString().padLeft(2, '0');
-    return '$day $month $year, $hour:$minute';
-  }
 
   void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -139,7 +117,10 @@ class _InsertPageState extends State<InsertPage> {
           0xFFE53935, // Merah
           0xFF1E88E5, // Biru
           0xFF43A047, // Hijau
-          0xFFFDD835, // Kuning
+          0xFFE0AD24, // Kuning
+          0xFF9C27B0, // Ungu
+          0xFF673AB7, // Indigo
+          0xFFE91E63, // Pink
         ];
 
         // Create CardData object
