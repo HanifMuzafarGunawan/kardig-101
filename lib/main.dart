@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'camera.dart';
 import 'insert.dart';
@@ -49,10 +50,91 @@ class _DashboardState extends State<Dashboard> {
   double _swipeOffset = 0.0;
   bool _isDragging = false;
 
+  Timer? _timer;
+  DateTime _currentTime = DateTime.now();
+
   @override
   void initState() {
     super.initState();
     _loadCardsFromDatabase();
+    // Mengaktifkan real-time timer
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted) {
+        setState(() {
+          _currentTime = DateTime.now();
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  // Format tanggal real-time lokal Indonesia
+  String _formatDate(DateTime dateTime) {
+    const List<String> days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const List<String> months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    String dayName = days[dateTime.weekday % 7];
+    String day = dateTime.day.toString();
+    String monthName = months[dateTime.month - 1];
+    String year = dateTime.year.toString();
+    return "$dayName, $day $monthName $year";
+  }
+
+  // Fungsi kalkulasi estimasi harga parkir
+  String _calculateEstimatedPrice(Map<String, dynamic> cardData, DateTime currentTime) {
+    try {
+      String tglMentah = cardData['date'].toString();
+      String jamMentah = cardData['time'].toString();
+
+      final Map<String, String> bulanAngka = {
+        'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+        'Mei': '05', 'Jun': '06', 'Jul': '07', 'Agu': '08',
+        'Sep': '09', 'Okt': '10', 'Nov': '11', 'Des': '12'
+      };
+
+      List<String> bagianTgl = tglMentah.split(' ');
+      String waktuMasukAman = "";
+
+      if (bagianTgl.length == 3) {
+        String hari = bagianTgl[0];
+        String bulan = bulanAngka[bagianTgl[1]] ?? '01';
+        String tahun = bagianTgl[2];
+        waktuMasukAman = "$tahun-$bulan-$hari $jamMentah:00";
+      }
+
+      DateTime waktuMasuk = DateTime.tryParse(waktuMasukAman) ?? DateTime.now();
+      Duration diff = currentTime.difference(waktuMasuk);
+      
+      int totalMinutes = diff.inMinutes;
+      if (totalMinutes <= 0) return "Rp 0";
+
+      int firstHourRate = cardData['firstHourRate'] ?? 0;
+      int afterFirstHourRate = cardData['afterFirstHourRate'] ?? 0;
+      int maxRate = cardData['maxRate'] ?? 0;
+
+      int totalFee = 0;
+      if (totalMinutes <= 60) {
+        totalFee = firstHourRate;
+      } else {
+        int extraHours = ((totalMinutes - 60) / 60).ceil();
+        totalFee = firstHourRate + (extraHours * afterFirstHourRate);
+      }
+
+      if (maxRate > 0 && totalFee > maxRate) {
+        totalFee = maxRate;
+      }
+
+      return "Rp $totalFee";
+    } catch (e) {
+      return "Rp -";
+    }
   }
 
   Future<void> _loadCardsFromDatabase() async {
@@ -210,6 +292,9 @@ class _DashboardState extends State<Dashboard> {
                             cardData['color'],
                             cardData['qrCode'],
                             cardData['id'],
+                            cardData['time'].toString(), // Jam Masuk
+                            _formatDate(_currentTime), // Tanggal Real-time
+                            _calculateEstimatedPrice(cardData, _currentTime), // Estimasi Harga
                           ),
                         ),
                       );
@@ -341,17 +426,20 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
-// Widget Desain Kartu Vertikal dengan QR Code di Tengah
+// Widget Desain Kartu Vertikal dengan QR Code di Tengah dan Informasi Real-Time di Bawah
 Widget _buildVerticalCard(
   String title,
   Color color,
   String qrCode,
   int? cardId,
+  String jamMasuk,
+  String dateString,
+  String estimatedPrice,
 ) {
   return Builder(
     builder: (context) => Container(
       width: 240,
-      height: 360,
+      height: 400, // Diperbesar dari 360 agar konten bawah muat dengan aman
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(28),
@@ -368,7 +456,7 @@ Widget _buildVerticalCard(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Bagian Atas
+          // Bagian Atas: Judul Kartu dan Menu Titik Tiga
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -467,37 +555,10 @@ Widget _buildVerticalCard(
             ],
           ),
 
-          // Bagian Bawah - Card Number
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                qrCode,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
-                  letterSpacing: 1,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Container(
-                width: 80,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ],
-          ),
-
-          // Bagian Tengah: QR Code ASLI (Bukan icon lagi)
+          // Bagian Tengah: Hanya QR Code
           Center(
             child: Container(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
@@ -505,9 +566,46 @@ Widget _buildVerticalCard(
               child: QrImageView(
                 data: qrCode.isNotEmpty ? qrCode : 'Data Kosong',
                 version: QrVersions.auto,
-                size: 160.0,
+                size: 140.0, // Diperkecil dari 160 agar ada ruang yang cukup di bawah
               ),
             ),
+          ),
+
+          // Bagian Bawah: Jam Masuk, Tanggal Real-Time, dan Estimasi Harga
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Jam Masuk
+              Text(
+                "Jam Masuk: $jamMasuk",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+              // Tanggal Real-time
+              Text(
+                dateString,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              const SizedBox(height: 8),
+              // Estimasi Harga
+              Text(
+                "Estimasi Harga: $estimatedPrice",
+                style: const TextStyle(
+                  color: Color(0xFFFFC107), // Warna amber yang premium dan elegan
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
         ],
       ),
