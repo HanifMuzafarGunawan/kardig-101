@@ -338,145 +338,6 @@ class _DashboardState extends State<Dashboard> {
 }
 
 // Widget Desain Kartu Vertikal dengan QR Code di Tengah
-<<<<<<< HEAD
-Widget _buildVerticalCard(String title, Color color) {
-  return Container(
-    width: 240,
-    height: 360,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(28),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: 0.4),
-          blurRadius: 15,
-          offset: const Offset(0, 8),
-        ),
-      ],
-    ),
-    padding: const EdgeInsets.all(24),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-
-        // Bagian Atas
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 0.5,
-              ),
-            ),
-
-            Row(
-              children: [
-                PopupMenuButton<String>(
-                  icon: const Icon(
-                    Icons.more_vert,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 0, minHeight: 0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20), //radius circle border
-                  ),
-                  onSelected: (value) {
-                    if (value == 'Edit') {
-                      // Logika untuk mengedit kartu
-                    } else if (value == 'Hapus') {
-                      // Logika untuk menghapus kartu
-                    }
-                  },
-                  itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
-                    PopupMenuItem<String>(
-                      value: 'Edit',
-                      child: Row(
-                        children: [
-                          Icon(
-                          Icons.edit,
-                          size: 18,
-                          color: Colors.white
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Edit',
-                          )
-                        ]
-                      )
-                    ),
-
-                    PopupMenuItem<String>(
-                      value: 'Edit',
-                      child: Row(
-                        children: [
-                          Icon(
-                          Icons.delete_forever,
-                          size: 18,
-                          color: Colors.redAccent
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Hapus',
-                            style: TextStyle(color: Colors.redAccent),
-                          )
-                        ]
-                      )
-                    )
-                  ],
-                )
-              ]
-            )
-          ],
-        ),
-
-        // Bagian Bawah
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "1234 5678 - 1234 5678",
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 13,
-                letterSpacing: 2,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-
-            const SizedBox(height: 12),
-            Container(
-              width: 80,
-              height: 28,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(14),
-              ),
-            ),
-          ],
-        ),
-
-        // Bagian Bawah
-        // Bagian Tengah: QR Code
-        Center(
-          child: Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: const Icon(
-              Icons.qr_code_2, 
-              size: 160, color: 
-              Colors.black
-              ),
-=======
 Widget _buildVerticalCard(
   String title,
   Color color,
@@ -495,7 +356,6 @@ Widget _buildVerticalCard(
             color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 15,
             offset: const Offset(0, 8),
->>>>>>> 80cc46d22a9b544f8c12523b3cd82f81210f42d7
           ),
         ],
       ),
@@ -629,7 +489,7 @@ Widget _buildVerticalCard(
             ],
           ),
 
-          // Bagian Tengah: QR Code
+          // Bagian Tengah: QR Code ASLI (Bukan icon lagi)
           Center(
             child: Container(
               padding: const EdgeInsets.all(15),

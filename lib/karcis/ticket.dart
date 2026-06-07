@@ -183,7 +183,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
           ),
           const SizedBox(height: 32),
 
-          Center(
+            Center(
             child: GestureDetector(
               onTap: () => _tampilkanQRFullScreen(context),
               child: Container(
@@ -200,7 +200,30 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               ),
             ),
           ),
-          const SizedBox(height: 32),
+          
+          const SizedBox(height: 16),
+
+          //PREDIKSI HARGA
+          Center(
+            child: Column(
+              children: [
+                const Text(
+                  "Estimasi Biaya Saat Ini",
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+                Text(
+                  "Rp ${widget.karcis.prediksiHarga}",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          // -------------------------------------
 
           // Memanggil data menggunakan 'widget.karcis'
           _buildDetailRow("Waktu Parkir", widget.karcis.durasiParkirSaatIni),
