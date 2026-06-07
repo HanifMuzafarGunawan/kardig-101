@@ -43,9 +43,20 @@ class DatabaseHelper {
         afterFirstHourRate INTEGER NOT NULL,
         maxRate INTEGER,
         color INTEGER NOT NULL
+        fotoKarcisFisik TEXT 
         
       )
     ''');
+  }
+
+  //onUpgrade
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Perintah menyisipkan kolom baru dengan nama fotoKarcisFisik
+      await db.execute('''
+        ALTER TABLE $_tableName ADD COLUMN fotoKarcisFisik TEXT
+      ''');
+    }
   }
 
   // Create

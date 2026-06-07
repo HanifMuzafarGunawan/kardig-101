@@ -52,6 +52,7 @@ class _DashboardState extends State<Dashboard> {
 
   Timer? _timer;
   DateTime _currentTime = DateTime.now();
+  String? _pathFotoTersimpan;
 
   @override
   void initState() {
@@ -75,10 +76,28 @@ class _DashboardState extends State<Dashboard> {
 
   // Format tanggal real-time lokal Indonesia
   String _formatDate(DateTime dateTime) {
-    const List<String> days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const List<String> days = [
+      'Minggu',
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+    ];
     const List<String> months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     String dayName = days[dateTime.weekday % 7];
     String day = dateTime.day.toString();
@@ -88,15 +107,27 @@ class _DashboardState extends State<Dashboard> {
   }
 
   // Fungsi kalkulasi estimasi harga parkir
-  String _calculateEstimatedPrice(Map<String, dynamic> cardData, DateTime currentTime) {
+  String _calculateEstimatedPrice(
+    Map<String, dynamic> cardData,
+    DateTime currentTime,
+  ) {
     try {
       String tglMentah = cardData['date'].toString();
       String jamMentah = cardData['time'].toString();
 
       final Map<String, String> bulanAngka = {
-        'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-        'Mei': '05', 'Jun': '06', 'Jul': '07', 'Agu': '08',
-        'Sep': '09', 'Okt': '10', 'Nov': '11', 'Des': '12'
+        'Jan': '01',
+        'Feb': '02',
+        'Mar': '03',
+        'Apr': '04',
+        'Mei': '05',
+        'Jun': '06',
+        'Jul': '07',
+        'Agu': '08',
+        'Sep': '09',
+        'Okt': '10',
+        'Nov': '11',
+        'Des': '12',
       };
 
       List<String> bagianTgl = tglMentah.split(' ');
@@ -111,7 +142,7 @@ class _DashboardState extends State<Dashboard> {
 
       DateTime waktuMasuk = DateTime.tryParse(waktuMasukAman) ?? DateTime.now();
       Duration diff = currentTime.difference(waktuMasuk);
-      
+
       int totalMinutes = diff.inMinutes;
       if (totalMinutes <= 0) return "Rp 0";
 
@@ -155,6 +186,7 @@ class _DashboardState extends State<Dashboard> {
             'firstHourRate': card.firstHourRate,
             'afterFirstHourRate': card.afterFirstHourRate,
             'maxRate': card.maxRate,
+            'fotoKarcisFisik': card.fotoKarcisFisik,
           };
         }).toList();
         _isLoading = false;
@@ -270,7 +302,7 @@ class _DashboardState extends State<Dashboard> {
 
                       // Efek tumpukan berlapis: kartu belakang dibuat agak bergeser ke atas
                       double baseTopPosition =
-                          (_cards.length - 1 - index) * -16.0;  
+                          (_cards.length - 1 - index) * -16.0;
 
                       // Efek skala perspektif untuk memberikan kedalaman visual 3D
                       double scale = 1.0 - ((_cards.length - 1 - index) * 0.05);
@@ -286,7 +318,9 @@ class _DashboardState extends State<Dashboard> {
                             baseTopPosition,
                           ),
                         child: Transform.scale(
-                          scale: scale + (_isDragging ? 0.3 : 0.3),
+                          // scale: scale + (_isDragging ? 0.3 : 0.3), ukuran bisa overflow
+                          // scale: _isDragging ? scale * 1.5 : scale,
+                          scale: scale,
                           child: _buildVerticalCard(
                             cardData['title'],
                             cardData['color'],
@@ -294,7 +328,10 @@ class _DashboardState extends State<Dashboard> {
                             cardData['id'],
                             cardData['time'].toString(), // Jam Masuk
                             _formatDate(_currentTime), // Tanggal Real-time
-                            _calculateEstimatedPrice(cardData, _currentTime), // Estimasi Harga
+                            _calculateEstimatedPrice(
+                              cardData,
+                              _currentTime,
+                            ), // Estimasi Harga
                           ),
                         ),
                       );
@@ -302,15 +339,23 @@ class _DashboardState extends State<Dashboard> {
                       // Logika khusus untuk kartu teratas agar bisa di-shuffle secara horizontal
                       if (isTopCard) {
                         return GestureDetector(
-                            onTap: () {
-                            
-                            String tglMentah = cardData['date'].toString(); 
-                            String jamMentah = cardData['time'].toString(); 
+                          onTap: () {
+                            String tglMentah = cardData['date'].toString();
+                            String jamMentah = cardData['time'].toString();
 
                             final Map<String, String> bulanAngka = {
-                              'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
-                              'Mei': '05', 'Jun': '06', 'Jul': '07', 'Agu': '08',
-                              'Sep': '09', 'Okt': '10', 'Nov': '11', 'Des': '12'
+                              'Jan': '01',
+                              'Feb': '02',
+                              'Mar': '03',
+                              'Apr': '04',
+                              'Mei': '05',
+                              'Jun': '06',
+                              'Jul': '07',
+                              'Agu': '08',
+                              'Sep': '09',
+                              'Okt': '10',
+                              'Nov': '11',
+                              'Des': '12',
                             };
 
                             List<String> bagianTgl = tglMentah.split(' ');
@@ -318,23 +363,27 @@ class _DashboardState extends State<Dashboard> {
 
                             if (bagianTgl.length == 3) {
                               String hari = bagianTgl[0];
-                              String bulan = bulanAngka[bagianTgl[1]] ?? '01'; 
+                              String bulan = bulanAngka[bagianTgl[1]] ?? '01';
                               String tahun = bagianTgl[2];
-                              
-                              
-                              waktuMasukAman = "$tahun-$bulan-$hari $jamMentah:00";
+
+                              waktuMasukAman =
+                                  "$tahun-$bulan-$hari $jamMentah:00";
                             }
 
-                            DateTime waktuMasuk = DateTime.tryParse(waktuMasukAman) ?? DateTime.now();
+                            DateTime waktuMasuk =
+                                DateTime.tryParse(waktuMasukAman) ??
+                                DateTime.now();
 
                             final karcisDariDatabase = KarcisParkir(
                               id: cardData['id'].toString(),
                               qrData: cardData['qrCode'] ?? 'Data Kosong',
-                              jamMasuk: waktuMasuk, // <-- Waktu yang sudah diterjemahkan
+                              jamMasuk:
+                                  waktuMasuk, // <-- Waktu yang sudah diterjemahkan
                               hargaAwal: cardData['firstHourRate'] ?? 0,
-                              hargaBerikutnya: cardData['afterFirstHourRate'] ?? 0,
+                              hargaBerikutnya:
+                                  cardData['afterFirstHourRate'] ?? 0,
                               tarifMaksimal: cardData['maxRate'],
-                              fotoKarcisFisik: '', 
+                              fotoKarcisFisik: cardData['fotoKarcisFisik'] ?? '',
                             );
 
                             Navigator.of(context).push(
@@ -438,11 +487,11 @@ Widget _buildVerticalCard(
 ) {
   return Builder(
     builder: (context) => Container(
-      width: 240,
-      height: 400, // Diperbesar dari 360 agar konten bawah muat dengan aman
+      width: 320,
+      height: 500, // Diperbesar dari 360 agar konten bawah muat dengan aman
       decoration: BoxDecoration(
         color: color,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.4),
@@ -464,7 +513,7 @@ Widget _buildVerticalCard(
                 title,
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
@@ -566,7 +615,8 @@ Widget _buildVerticalCard(
               child: QrImageView(
                 data: qrCode.isNotEmpty ? qrCode : 'Data Kosong',
                 version: QrVersions.auto,
-                size: 140.0, // Diperkecil dari 160 agar ada ruang yang cukup di bawah
+                size:
+                    200.0, // Diperkecil dari 160 agar ada ruang yang cukup di bawah
               ),
             ),
           ),
@@ -580,28 +630,28 @@ Widget _buildVerticalCard(
                 "Jam Masuk: $jamMasuk",
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: 15,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 0),
               // Tanggal Real-time
               Text(
                 dateString,
                 style: const TextStyle(
                   color: Colors.white70,
-                  fontSize: 13,
+                  fontSize: 18,
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               // Estimasi Harga
               Text(
                 "Estimasi Harga: $estimatedPrice",
                 style: const TextStyle(
-                  color: Color(0xFFFFC107), // Warna amber yang premium dan elegan
-                  fontSize: 14,
+                  color: Color.fromARGB(255, 255, 255, 255), // Warna amber yang premium dan elegan
+                  fontSize: 17,
                   fontWeight: FontWeight.w600,
                 ),
               ),

@@ -172,7 +172,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
 
           // Memanggil data menggunakan 'widget.karcis'
@@ -223,6 +223,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
   }
 
   Widget _buildViewPhotosButton(BuildContext context) {
+
+    final bool fileFotoAda = widget.karcis.fotoKarcisFisik.isNotEmpty && File(widget.karcis.fotoKarcisFisik).existsSync();
+
     return GestureDetector(
       onTap: () {
         showDialog(
@@ -253,15 +256,22 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(
-                      Icons.receipt_long,
-                      size: 80,
-                      color: Colors.grey,
-                    ),
+                    child: fileFotoAda
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              File(widget.karcis.fotoKarcisFisik),
+                              fit: BoxFit.cover,
+                            ),
+                        )
+                        : const Icon(
+                            Icons.receipt_long,
+                            size: 80,
+                            color: Colors.grey,
+                          ),
                   ),
 
-                  // child: 
-
+                  // child:
                   const SizedBox(height: 16),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -301,12 +311,17 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               child: Container(
                 width: 40,
                 height: 40,
-                color: Colors.grey,
-                child: const Icon(
-                  Icons.qr_code,
-                  size: 20,
-                  color: Colors.white54,
-                ),
+                color: fileFotoAda ? Colors.white : Colors.grey,
+                child: fileFotoAda
+                    ? Image.file(
+                      File(widget.karcis.fotoKarcisFisik),
+                      fit: BoxFit.cover,
+                    )
+                    : const Icon(
+                        Icons.receipt_long,
+                        size: 20,
+                        color: Colors.white54,
+                      ),
               ),
             ),
           ],

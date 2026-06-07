@@ -1,11 +1,14 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart'; // 🛠️ TAMBAHAN: Impor ini wajib ada agar kamera berfungsi
 import 'package:flutter/material.dart';
 import 'database/database_helper.dart';
 import 'models/card_model.dart';
 
 class InsertPage extends StatefulWidget {
   final String? scannedCode;
+  final String? scannedImagePath;
 
-  const InsertPage({super.key, this.scannedCode});
+  const InsertPage({super.key, this.scannedCode, this.scannedImagePath});
 
   @override
   State<InsertPage> createState() => _InsertPageState();
@@ -21,11 +24,16 @@ class _InsertPageState extends State<InsertPage> {
   final TextEditingController _maxRateController = TextEditingController();
   DateTime _selectedDateTime = DateTime.now();
 
+  String? _pathFotoTersimpan;
+
   @override
   void initState() {
     super.initState();
     if (widget.scannedCode != null) {
       _codeController.text = widget.scannedCode!;
+    }
+    if (widget.scannedImagePath != null) {
+      _pathFotoTersimpan = widget.scannedImagePath!;
     }
   }
 
@@ -37,6 +45,27 @@ class _InsertPageState extends State<InsertPage> {
     _afterFirstHourController.dispose();
     _maxRateController.dispose();
     super.dispose();
+  }
+
+  Future<void> _ambilFotoKarcis() async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality:
+            70, // Kompres kualitas gambar agar hemat memori database HP
+      );
+
+      if (image != null) {
+        setState(() {
+          _pathFotoTersimpan = image.path;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal membuka kamera: $e')));
+    }
   }
 
   Future<void> _pickDate() async {
@@ -106,33 +135,9 @@ class _InsertPageState extends State<InsertPage> {
     return '$hour:$minute';
   }
 
-  String get _formattedDateTime {
-    final monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
-    final day = _selectedDateTime.day.toString().padLeft(2, '0');
-    final month = monthNames[_selectedDateTime.month - 1];
-    final year = _selectedDateTime.year;
-    final hour = _selectedDateTime.hour.toString().padLeft(2, '0');
-    final minute = _selectedDateTime.minute.toString().padLeft(2, '0');
-    return '$day $month $year, $hour:$minute';
-  }
-
   void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
-        // Dapatkan jumlah kartu yang ada untuk menentukan warna
         final allCards = await DatabaseHelper().getAllCards();
         final colorIndex = allCards.length % 4;
         final colors = [
@@ -142,7 +147,6 @@ class _InsertPageState extends State<InsertPage> {
           0xFFFDD835, // Kuning
         ];
 
-        // Create CardData object
         final newCard = CardData(
           qrCode: _codeController.text,
           name: _nameController.text,
@@ -154,9 +158,9 @@ class _InsertPageState extends State<InsertPage> {
               ? int.parse(_maxRateController.text)
               : null,
           color: colors[colorIndex],
+          fotoKarcisFisik: _pathFotoTersimpan,
         );
 
-        // Save to database
         await DatabaseHelper().insertCard(newCard);
 
         if (!mounted) return;
@@ -167,7 +171,6 @@ class _InsertPageState extends State<InsertPage> {
         Navigator.of(context).pop(true); // Return true untuk trigger refresh
       } catch (e) {
         if (!mounted) return;
-
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -194,6 +197,8 @@ class _InsertPageState extends State<InsertPage> {
                 style: TextStyle(color: Colors.white70, fontSize: 16),
               ),
               const SizedBox(height: 24),
+
+              // 1. Input Kode QR
               TextFormField(
                 controller: _codeController,
                 enabled: false,
@@ -209,6 +214,8 @@ class _InsertPageState extends State<InsertPage> {
                 style: const TextStyle(color: Colors.white70),
               ),
               const SizedBox(height: 20),
+
+              // 2. Input Nama
               TextFormField(
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
@@ -230,6 +237,8 @@ class _InsertPageState extends State<InsertPage> {
                 },
               ),
               const SizedBox(height: 20),
+
+              // 3. Pilihan Tanggal
               GestureDetector(
                 onTap: _pickDate,
                 child: AbsorbPointer(
@@ -253,6 +262,8 @@ class _InsertPageState extends State<InsertPage> {
                 ),
               ),
               const SizedBox(height: 20),
+
+              // 4. Pilihan Waktu
               GestureDetector(
                 onTap: _pickTime,
                 child: AbsorbPointer(
@@ -276,6 +287,8 @@ class _InsertPageState extends State<InsertPage> {
                 ),
               ),
               const SizedBox(height: 20),
+
+              // 5. Input Tarif 1 Jam Pertama
               TextFormField(
                 controller: _firstHourController,
                 keyboardType: TextInputType.number,
@@ -298,6 +311,8 @@ class _InsertPageState extends State<InsertPage> {
                 },
               ),
               const SizedBox(height: 20),
+
+              // 6. Input Tarif Jam Berikutnya
               TextFormField(
                 controller: _afterFirstHourController,
                 keyboardType: TextInputType.number,
@@ -320,6 +335,8 @@ class _InsertPageState extends State<InsertPage> {
                 },
               ),
               const SizedBox(height: 20),
+
+              // 7. Input Tarif Maksimal (Opsional)
               TextFormField(
                 controller: _maxRateController,
                 keyboardType: TextInputType.number,
@@ -336,6 +353,55 @@ class _InsertPageState extends State<InsertPage> {
                 style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 32),
+
+              // 📸 8. Tombol Kamera Manual
+              GestureDetector(
+                onTap: _ambilFotoKarcis,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1E1E20),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: _pathFotoTersimpan != null
+                          ? Colors.green
+                          : Colors.white24,
+                      width: 1,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        _pathFotoTersimpan != null
+                            ? Icons.check_circle
+                            : Icons.camera_alt,
+                        color: _pathFotoTersimpan != null
+                            ? Colors.green
+                            : Colors.white70,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        _pathFotoTersimpan != null
+                            ? 'Foto Karcis Berhasil Disimpan'
+                            : 'Ambil Foto Karcis Fisik (Opsional)',
+                        style: TextStyle(
+                          color: _pathFotoTersimpan != null
+                              ? Colors.green
+                              : Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // 🚀 9. Tombol Simpan Akhir
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(

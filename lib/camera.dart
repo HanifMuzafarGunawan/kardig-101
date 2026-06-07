@@ -63,11 +63,18 @@ class _CameraState extends State<Camera> {
     );
   }
 
-  void _onQRViewCreated(QRViewController controller) {
+void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
-    controller.scannedDataStream.listen((scanData) {
-      if (scanData.code != null) {
-        controller.pauseCamera();
+    bool isProcessing = false; // Mencegah perpindahan halaman ganda
+
+    controller.scannedDataStream.listen((scanData) async {
+      if (scanData.code != null && !isProcessing) {
+        isProcessing = true;
+        await controller.pauseCamera();
+
+        if (!mounted) return;
+
+        // Berpindah ke InsertPage hanya membawa kode teks QR saja secara aman
         Navigator.of(context)
             .push(
               MaterialPageRoute(
@@ -76,7 +83,11 @@ class _CameraState extends State<Camera> {
             )
             .then((result) {
               if (result == true) {
-                Navigator.of(context).pop(true); // Return true to Dashboard
+                Navigator.of(context).pop(true); // Sukses, balik ke Dashboard
+              } else {
+                isProcessing = false;
+                controller
+                    .resumeCamera(); // Jika batal, kamera scanner aktif lagi
               }
             });
       }

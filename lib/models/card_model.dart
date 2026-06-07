@@ -8,6 +8,7 @@ class CardData {
   final int afterFirstHourRate;
   final int? maxRate;
   final int color;
+  final String? fotoKarcisFisik;
 
   CardData({
     this.id,
@@ -19,6 +20,7 @@ class CardData {
     required this.afterFirstHourRate,
     this.maxRate,
     required this.color,
+    this.fotoKarcisFisik,
   });
 
   // Convert object to JSON
@@ -33,6 +35,7 @@ class CardData {
       'afterFirstHourRate': afterFirstHourRate,
       'maxRate': maxRate,
       'color': color,
+      'fotoKarcisFisik': fotoKarcisFisik,
     };
   }
 
@@ -48,6 +51,7 @@ class CardData {
       afterFirstHourRate: map['afterFirstHourRate'],
       maxRate: map['maxRate'],
       color: map['color'],
+      fotoKarcisFisik: map['fotoKarcisFisik'],
     );
   }
 }
