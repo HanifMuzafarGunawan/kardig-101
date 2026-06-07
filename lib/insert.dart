@@ -135,6 +135,10 @@ class _InsertPageState extends State<InsertPage> {
     return '$hour:$minute';
   }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9feda7e2ff4d23f16113572678f33119efffb42a
   void _submitForm() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
@@ -144,7 +148,10 @@ class _InsertPageState extends State<InsertPage> {
           0xFFE53935, // Merah
           0xFF1E88E5, // Biru
           0xFF43A047, // Hijau
-          0xFFFDD835, // Kuning
+          0xFFE0AD24, // Kuning
+          0xFF9C27B0, // Ungu
+          0xFF673AB7, // Indigo
+          0xFFE91E63, // Pink
         ];
 
         final newCard = CardData(

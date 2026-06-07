@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'karcis_parkir.dart';
@@ -109,11 +108,6 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
 
             _buildViewPhotosButton(context),
             const SizedBox(height: 24),
-            const Text(
-              "Karcis ini hanya duplikasi. Untuk memverifikasi detail karcis, hubungi penyedia layanan parkir.",
-              style: TextStyle(color: Colors.grey, fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
           ],
         ),
       ),
