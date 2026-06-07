@@ -68,11 +68,17 @@ class _CameraState extends State<Camera> {
     controller.scannedDataStream.listen((scanData) {
       if (scanData.code != null) {
         controller.pauseCamera();
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => InsertPage(scannedCode: scanData.code),
-          ),
-        );
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => InsertPage(scannedCode: scanData.code),
+              ),
+            )
+            .then((result) {
+              if (result == true) {
+                Navigator.of(context).pop(true); // Return true to Dashboard
+              }
+            });
       }
     });
   }
