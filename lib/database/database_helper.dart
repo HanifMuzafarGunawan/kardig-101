@@ -42,7 +42,7 @@ class DatabaseHelper {
         firstHourRate INTEGER NOT NULL,
         afterFirstHourRate INTEGER NOT NULL,
         maxRate INTEGER,
-        color INTEGER NOT NULL
+        color INTEGER NOT NULL,
         fotoKarcisFisik TEXT 
         
       )
