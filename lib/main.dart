@@ -63,7 +63,7 @@ class _DashboardState extends State<Dashboard> {
           return {
             'id': card.id,
             'title': card.name,
-            'color': Color(_cardColors[index % _cardColors.length]),
+            'color': Color(card.color),
             'qrCode': card.qrCode,
             'date': card.date,
             'time': card.time,
@@ -185,7 +185,7 @@ class _DashboardState extends State<Dashboard> {
 
                       // Efek tumpukan berlapis: kartu belakang dibuat agak bergeser ke atas
                       double baseTopPosition =
-                          (_cards.length - 1 - index) * -16.0;
+                          (_cards.length - 1 - index) * -16.0;  
 
                       // Efek skala perspektif untuk memberikan kedalaman visual 3D
                       double scale = 1.0 - ((_cards.length - 1 - index) * 0.05);
@@ -252,6 +252,7 @@ class _DashboardState extends State<Dashboard> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) => TicketDetailPage(
+                                  warnaKartu: cardData['color'],
                                   karcis: karcisDariDatabase,
                                 ),
                               ),
@@ -338,6 +339,10 @@ class _DashboardState extends State<Dashboard> {
 }
 
 // Widget Desain Kartu Vertikal dengan QR Code di Tengah
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7451a6c83400bf36b77760ed7c8b846b07924470
 Widget _buildVerticalCard(
   String title,
   Color color,
@@ -356,6 +361,10 @@ Widget _buildVerticalCard(
             color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 15,
             offset: const Offset(0, 8),
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7451a6c83400bf36b77760ed7c8b846b07924470
           ),
         ],
       ),

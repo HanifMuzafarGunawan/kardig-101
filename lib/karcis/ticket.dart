@@ -1,4 +1,4 @@
-import 'dart:async'; // <-- Tambahan untuk Timer
+import 'dart:async'; 
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'karcis_parkir.dart';
@@ -6,8 +6,13 @@ import 'karcis_parkir.dart';
 // 1. StatefulWidget
 class TicketDetailPage extends StatefulWidget {
   final KarcisParkir karcis;
+  final Color warnaKartu;
 
-  const TicketDetailPage({super.key, required this.karcis});
+  const TicketDetailPage({
+    super.key,
+    required this.karcis,
+    required this.warnaKartu,
+  });
 
   @override
   State<TicketDetailPage> createState() => _TicketDetailPageState();
@@ -15,7 +20,6 @@ class TicketDetailPage extends StatefulWidget {
 
 class _TicketDetailPageState extends State<TicketDetailPage> {
   Timer? _timer;
-  bool _isFavorite = false;
 
   // Real Time
   @override
@@ -39,7 +43,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
         builder: (context) => Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: const Color(0xFF1E1E1E),
+            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
             elevation: 4,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -65,65 +69,16 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color.fromARGB(0, 0, 0, 0),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          // 1. Icon Favorite
-          IconButton(
-            icon: Icon(
-              _isFavorite ? Icons.star : Icons.star_border,
-              color: _isFavorite ? Colors.yellow : Colors.white,
-            ),
-            onPressed: () {
-              setState(() {
-                _isFavorite = !_isFavorite;
-              });
-
-              // pop up notifikasi
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    _isFavorite
-                        ? 'Ditambahkan ke Favorit'
-                        : 'Dihapus dari Favorit',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  duration: const Duration(seconds: 1),
-                  backgroundColor: const Color(0xFF2C2C2C),
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 8),
-
-          // 2. Tombol Titik Tiga (hapus)
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            color: const Color(0xFF2C2C2C), // Background popup gelap
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            onSelected: (String pilihan) {
-              if (pilihan == 'Hapus') {
-                // Aksi Hapus: Menutup halaman karcis dan kembali ke menu awal
-                Navigator.pop(context);
-              }
-            },
-            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
-                value: 'Hapus',
-                child: Text('Hapus', style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-          const SizedBox(width: 8),
-        ],
+        // PERBAIKAN: Actions dihapus semua sesuai request temanmu (bintang & titik 3 hilang)
+        actions: const [], 
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -131,10 +86,32 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
           children: [
             _buildCardUtama(context),
             const SizedBox(height: 16),
+
+            // PERBAIKAN: Prediksi Harga dipindah ke LUAR kartu, di antara kartu dan tombol view photos
+            Center(
+              child: Column(
+                children: [
+                  const Text(
+                    "Estimasi Biaya Saat Ini",
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  Text(
+                    "Rp ${widget.karcis.prediksiHarga}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+
             _buildViewPhotosButton(context),
             const SizedBox(height: 24),
             const Text(
-              "This pass was created by the account owner. To verify the pass details, check with the provider.",
+              "Karcis ini hanya duplikasi. Untuk memverifikasi detail karcis, hubungi penyedia layanan parkir.",
               style: TextStyle(color: Colors.grey, fontSize: 12),
               textAlign: TextAlign.center,
             ),
@@ -148,11 +125,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF9032E6), Color(0xFFC07BFC)],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-        ),
+        color: widget.warnaKartu,
         borderRadius: BorderRadius.circular(24),
       ),
       padding: const EdgeInsets.all(24.0),
@@ -183,7 +156,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
           ),
           const SizedBox(height: 32),
 
-            Center(
+          Center(
             child: GestureDetector(
               onTap: () => _tampilkanQRFullScreen(context),
               child: Container(
@@ -201,29 +174,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
             ),
           ),
           
-          const SizedBox(height: 16),
-
-          //PREDIKSI HARGA
-          Center(
-            child: Column(
-              children: [
-                const Text(
-                  "Estimasi Biaya Saat Ini",
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                Text(
-                  "Rp ${widget.karcis.prediksiHarga}",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: 24),
-          // -------------------------------------
 
           // Memanggil data menggunakan 'widget.karcis'
           _buildDetailRow("Waktu Parkir", widget.karcis.durasiParkirSaatIni),
@@ -336,7 +287,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "View pass photos",
+              "Lihat Foto Karcis",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
