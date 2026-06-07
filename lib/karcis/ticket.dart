@@ -6,8 +6,13 @@ import 'karcis_parkir.dart';
 // 1. StatefulWidget
 class TicketDetailPage extends StatefulWidget {
   final KarcisParkir karcis;
+  final Color warnaKartu;
 
-  const TicketDetailPage({super.key, required this.karcis});
+  const TicketDetailPage({
+    super.key, 
+    required this.karcis,
+    required this.warnaKartu
+    });
 
   @override
   State<TicketDetailPage> createState() => _TicketDetailPageState();
@@ -39,7 +44,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
         builder: (context) => Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: const Color(0xFF1E1E1E),
+            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
             elevation: 4,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -65,9 +70,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E),
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color.fromARGB(0, 0, 0, 0),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -95,7 +100,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                     style: const TextStyle(color: Colors.white),
                   ),
                   duration: const Duration(seconds: 1),
-                  backgroundColor: const Color(0xFF2C2C2C),
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                 ),
               );
             },
@@ -104,10 +109,10 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
 
           // 2. Tombol Titik Tiga (hapus)
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            color: const Color(0xFF2C2C2C), // Background popup gelap
+            icon: const Icon(Icons.delete, color: Color.fromARGB(255, 255, 0, 0)),
+            color: const Color.fromARGB(255, 255, 0, 0), // Background popup gelap
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(10),
             ),
             onSelected: (String pilihan) {
               if (pilihan == 'Hapus') {
@@ -122,7 +127,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               ),
             ],
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 5),
         ],
       ),
       body: SingleChildScrollView(
@@ -134,7 +139,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
             _buildViewPhotosButton(context),
             const SizedBox(height: 24),
             const Text(
-              "This pass was created by the account owner. To verify the pass details, check with the provider.",
+              "Karcis ini hanya duplikasi. Untuk memverifikasi detail karcis, hubungi penyedia layanan parkir.",
               style: TextStyle(color: Colors.grey, fontSize: 12),
               textAlign: TextAlign.center,
             ),
@@ -148,8 +153,10 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF9032E6), Color(0xFFC07BFC)],
+        gradient: LinearGradient(
+          colors: [
+            widget.warnaKartu,
+            widget.warnaKartu.withValues(alpha: 0.8),],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -313,7 +320,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "View pass photos",
+              "Lihat Foto Karcis",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 16,
