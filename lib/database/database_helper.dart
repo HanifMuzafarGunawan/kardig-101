@@ -43,6 +43,7 @@ class DatabaseHelper {
         afterFirstHourRate INTEGER NOT NULL,
         maxRate INTEGER,
         color INTEGER NOT NULL
+        
       )
     ''');
   }

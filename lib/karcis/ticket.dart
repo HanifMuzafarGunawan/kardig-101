@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async'; // <-- Tambahan untuk Timer
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -80,32 +81,32 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
         ),
         actions: [
           // 1. Icon Favorite
-          IconButton(
-            icon: Icon(
-              _isFavorite ? Icons.star : Icons.star_border,
-              color: _isFavorite ? Colors.yellow : Colors.white,
-            ),
-            onPressed: () {
-              setState(() {
-                _isFavorite = !_isFavorite;
-              });
+          // IconButton(
+          //   icon: Icon(
+          //     _isFavorite ? Icons.star : Icons.star_border,
+          //     color: _isFavorite ? Colors.yellow : Colors.white,
+          //   ),
+          //   onPressed: () {
+          //     setState(() {
+          //       _isFavorite = !_isFavorite;
+          //     });
 
-              // pop up notifikasi
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    _isFavorite
-                        ? 'Ditambahkan ke Favorit'
-                        : 'Dihapus dari Favorit',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  duration: const Duration(seconds: 1),
-                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                ),
-              );
-            },
-          ),
-          const SizedBox(width: 8),
+          //     // pop up notifikasi
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       SnackBar(
+          //         content: Text(
+          //           _isFavorite
+          //               ? 'Ditambahkan ke Favorit'
+          //               : 'Dihapus dari Favorit',
+          //           style: const TextStyle(color: Colors.white),
+          //         ),
+          //         duration: const Duration(seconds: 1),
+          //         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+          //       ),
+          //     );
+          //   },
+          // ),
+          // const SizedBox(width: 8),
 
           // 2. Tombol Titik Tiga (hapus)
           PopupMenuButton<String>(
@@ -132,7 +133,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               ),
             ],
           ),
-          const SizedBox(width: 5),
+          const SizedBox(width: 10),
         ],
       ),
       body: SingleChildScrollView(
@@ -167,10 +168,10 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
         children: [
           Row(
             children: const [
-              Icon(Icons.local_activity, color: Colors.white),
+              Icon(Icons.local_parking, color: Colors.white),
               SizedBox(width: 8),
               Text(
-                "tiket",
+                "Karcis",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -280,7 +281,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    height: 250,
+                    height: 350,
                     width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
@@ -292,6 +293,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       color: Colors.grey,
                     ),
                   ),
+
+                  // child: 
+
                   const SizedBox(height: 16),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
