@@ -3,9 +3,9 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
-        android:label="Kardig"
+        android:label="Kardig Wallet"
         android:name="${applicationName}"
-        android:icon="@mipmap/laucher_icon">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
