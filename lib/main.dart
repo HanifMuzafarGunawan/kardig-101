@@ -241,7 +241,7 @@ Widget _buildVerticalCard(String title, Color color) {
                     }
                   },
                   itemBuilder: (BuildContext context) => const <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'Edit',
                       child: Row(
                         children: [
@@ -258,7 +258,7 @@ Widget _buildVerticalCard(String title, Color color) {
                       )
                     ),
 
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'Edit',
                       child: Row(
                         children: [
