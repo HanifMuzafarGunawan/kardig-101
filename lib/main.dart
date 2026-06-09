@@ -468,7 +468,7 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
-          side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0).withValues(alpha: 0.3), width: 1),
+          side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0).withValues(alpha: 0.3), width: 0),
         ),
         icon: const Icon(Icons.add, color: Color.fromARGB(255, 0, 0, 0)),
         label: const Text(
