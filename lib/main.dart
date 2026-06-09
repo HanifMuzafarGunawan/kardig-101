@@ -7,8 +7,15 @@ import 'models/card_model.dart';
 import 'karcis/ticket.dart';
 import 'karcis/karcis_parkir.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:flutter/services.dart';
 
-void main() => runApp(const TheProject());
+void main(){
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
+    runApp(const TheProject());
+  });
+} 
 
 class TheProject extends StatelessWidget {
   const TheProject({super.key});
@@ -43,6 +50,7 @@ class _DashboardState extends State<Dashboard> {
   Timer? _timer;
   DateTime _currentTime = DateTime.now();
   String? _pathFotoTersimpan;
+  int _currentActiveIndex = 0;
 
   @override
   void initState() {
@@ -178,6 +186,9 @@ class _DashboardState extends State<Dashboard> {
             'fotoKarcisFisik': card.fotoKarcisFisik,
           };
         }).toList();
+        if (_cards.isNotEmpty) {
+          _currentActiveIndex = _cards.length - 1;
+        }
         _isLoading = false;
       });
     } catch (e) {
@@ -195,6 +206,11 @@ class _DashboardState extends State<Dashboard> {
       // Mengambil kartu paling depan (indeks terakhir) lalu ditaruh ke belakang (indeks 0)
       final topCard = _cards.removeLast();
       _cards.insert(0, topCard);
+      if (_currentActiveIndex == 0) {
+        _currentActiveIndex = _cards.length - 1;
+      } else {
+        _currentActiveIndex--;
+      }
       _swipeOffset = 0.0;
       _isDragging = false;
     });
@@ -241,6 +257,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     // Mencari tahu kartu apa yang sekarang berada di posisi paling depan
     int activeIndex = _cards.isNotEmpty ? _cards.length - 1 : 0;
+    // int activeIndex = _cards.isNotEmpty ? _cards.length - 1 : 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -291,7 +308,7 @@ class _DashboardState extends State<Dashboard> {
 
                       // Efek tumpukan berlapis: kartu belakang dibuat agak bergeser ke atas
                       double baseTopPosition =
-                          (_cards.length - 1 - index) * -16.0;
+                          (_cards.length - 0- index) * -25.0; //dari 1 ke 0
 
                       // Efek skala perspektif untuk memberikan kedalaman visual 3D
                       double scale = 1.0 - ((_cards.length - 1 - index) * 0.05);
@@ -325,7 +342,7 @@ class _DashboardState extends State<Dashboard> {
                         ),
                       );
 
-                      // Logika khusus untuk kartu teratas agar bisa di-shuffle secara horizontal
+                      // Logika khusus untuk kartu teratas agar bisa di-shuffle secara vertical
                       if (isTopCard) {
                         return GestureDetector(
                           onTap: () {
@@ -417,16 +434,18 @@ class _DashboardState extends State<Dashboard> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(_cards.length, (index) {
+                    bool isCurrentActive = index == _currentActiveIndex;
+
                     return AnimatedContainer(
                       duration: const Duration(milliseconds: 250),
                       margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: activeIndex == index
+                      width: isCurrentActive
                           ? 24
                           : 8, // Titik aktif dibuat lebih panjang melonjong
                       height: 8,
                       decoration: BoxDecoration(
-                        color: activeIndex == index
-                            ? const Color(0xFFA8C7FA)
+                        color: isCurrentActive
+                            ? const Color.fromARGB(255, 255, 255, 255)
                             : Colors.grey.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(4),
                       ),
@@ -446,16 +465,16 @@ class _DashboardState extends State<Dashboard> {
             _loadCardsFromDatabase();
           }
         },
-        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
-          side: BorderSide(color: Colors.grey.withValues(alpha: 0.3), width: 1),
+          side: BorderSide(color: const Color.fromARGB(255, 0, 0, 0).withValues(alpha: 0.3), width: 1),
         ),
-        icon: const Icon(Icons.add, color: Color.fromARGB(255, 255, 255, 255)),
+        icon: const Icon(Icons.add, color: Color.fromARGB(255, 0, 0, 0)),
         label: const Text(
           "Tambah karcis",
           style: TextStyle(
-            color: Color(0xFFE3E2E6),
+            color: Color.fromARGB(255, 0, 0, 0),
             fontWeight: FontWeight.w500,
           ),
         ),

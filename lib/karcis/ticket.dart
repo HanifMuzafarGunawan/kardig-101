@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'karcis_parkir.dart';
+import 'package:screen_brightness/screen_brightness.dart';
 
 // 1. StatefulWidget
 class TicketDetailPage extends StatefulWidget {
@@ -38,8 +39,14 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     super.dispose();
   }
 
-  void _tampilkanQRFullScreen(BuildContext context) {
-    Navigator.of(context).push(
+  void _tampilkanQRFullScreen(BuildContext context) async {
+    double brightnessAwal;
+    try {
+      brightnessAwal = await ScreenBrightness().current;
+      await ScreenBrightness().setScreenBrightness(1.0);
+    
+    if (!context.mounted) return;
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Scaffold(
           backgroundColor: Colors.white,
@@ -56,15 +63,21 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
             ),
           ),
           body: Center(
-            child: QrImageView(
-              data: widget.karcis.qrData,
-              version: QrVersions.auto,
-              size: 300.0,
-            ),
-          ),
+                child: QrImageView(
+                  data: widget.karcis.qrData,
+                  version: QrVersions.auto,
+                  size: 300.0,
+                ),
+              ),
         ),
       ),
-    );
+    ); 
+
+    await ScreenBrightness().setScreenBrightness(brightnessAwal);
+
+   } catch (e) {
+      debugPrint("Gagal mengatur brightness: $e");
+    }
   }
 
   @override
@@ -218,8 +231,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
   }
 
   Widget _buildViewPhotosButton(BuildContext context) {
-
-    final bool fileFotoAda = widget.karcis.fotoKarcisFisik.isNotEmpty && File(widget.karcis.fotoKarcisFisik).existsSync();
+    final bool fileFotoAda =
+        widget.karcis.fotoKarcisFisik.isNotEmpty &&
+        File(widget.karcis.fotoKarcisFisik).existsSync();
 
     return GestureDetector(
       onTap: () {
@@ -258,7 +272,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                               File(widget.karcis.fotoKarcisFisik),
                               fit: BoxFit.cover,
                             ),
-                        )
+                          )
                         : const Icon(
                             Icons.receipt_long,
                             size: 80,
@@ -309,9 +323,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                 color: fileFotoAda ? Colors.white : Colors.grey,
                 child: fileFotoAda
                     ? Image.file(
-                      File(widget.karcis.fotoKarcisFisik),
-                      fit: BoxFit.cover,
-                    )
+                        File(widget.karcis.fotoKarcisFisik),
+                        fit: BoxFit.cover,
+                      )
                     : const Icon(
                         Icons.receipt_long,
                         size: 20,
